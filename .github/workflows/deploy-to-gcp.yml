@@ -1,0 +1,82 @@
+# GitHub Actions workflow for deploying to Google Cloud Platform
+# This workflow builds and deploys the video automation system to Cloud Run
+
+name: Deploy to Google Cloud
+
+on:
+  push:
+    branches:
+      - main
+      - production
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  SERVICE_NAME: video-automation
+
+jobs:
+  deploy:
+    name: Build and Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    
+    # Require explicit approval for production deployments
+    # environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure Docker for GCR
+        run: |
+          gcloud auth configure-docker
+
+      - name: Build container image
+        run: |
+          gcloud builds submit --config cloudbuild.yaml .
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy $SERVICE_NAME \
+            --image gcr.io/$PROJECT_ID/$SERVICE_NAME:latest \
+            --region $REGION \
+            --platform managed \
+            --memory 2Gi \
+            --cpu 2 \
+            --timeout 3600 \
+            --no-allow-unauthenticated \
+            --service-account video-automation-sa@$PROJECT_ID.iam.gserviceaccount.com \
+            --set-env-vars GCP_PROJECT_ID=$PROJECT_ID,SCHEDULE_TYPE=daily,SCHEDULE_TIME=09:00,PRODUCTS_PER_RUN=1,RUN_ON_START=false
+
+      - name: Get service URL
+        run: |
+          SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+            --region $REGION \
+            --format 'value(status.url)')
+          echo "Service deployed to: $SERVICE_URL"
+          echo "SERVICE_URL=$SERVICE_URL" >> $GITHUB_ENV
+
+      - name: Deployment summary
+        run: |
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **Deployment successful!**" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Service**: $SERVICE_NAME" >> $GITHUB_STEP_SUMMARY
+          echo "- **Region**: $REGION" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: $SERVICE_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- **Image**: gcr.io/$PROJECT_ID/$SERVICE_NAME:latest" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+          echo "1. Verify logs: \`gcloud run services logs tail $SERVICE_NAME --region=$REGION\`" >> $GITHUB_STEP_SUMMARY
+          echo "2. Test scheduler: \`gcloud scheduler jobs run video-automation-daily --location=$REGION\`" >> $GITHUB_STEP_SUMMARY

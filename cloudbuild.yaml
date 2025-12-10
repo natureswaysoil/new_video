@@ -1,0 +1,59 @@
+# Cloud Build configuration for automated builds
+# This file defines how to build and deploy the video automation system
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/video-automation:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/video-automation:latest'
+      - '.'
+    id: 'build-image'
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/video-automation:$COMMIT_SHA'
+    id: 'push-image-sha'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/video-automation:latest'
+    id: 'push-image-latest'
+
+  # Deploy to Cloud Run (optional - uncomment to auto-deploy)
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   entrypoint: gcloud
+  #   args:
+  #     - 'run'
+  #     - 'deploy'
+  #     - 'video-automation'
+  #     - '--image=gcr.io/$PROJECT_ID/video-automation:$COMMIT_SHA'
+  #     - '--region=us-central1'
+  #     - '--platform=managed'
+  #     - '--allow-unauthenticated'
+  #     - '--memory=2Gi'
+  #     - '--cpu=2'
+  #     - '--timeout=3600'
+  #     - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+  #   id: 'deploy-cloud-run'
+
+# Images to be pushed to Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/video-automation:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/video-automation:latest'
+
+# Build timeout (default is 10 minutes)
+timeout: 1200s
+
+options:
+  # Use a machine type with more resources for faster builds
+  machineType: 'N1_HIGHCPU_8'
+  
+  # Logging options
+  logging: CLOUD_LOGGING_ONLY
