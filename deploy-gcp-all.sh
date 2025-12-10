@@ -102,7 +102,7 @@ echo -e "${YELLOW}Creating service account...${NC}"
 CREATE_SA_OUTPUT=$(gcloud iam service-accounts create $SA_NAME \
     --display-name="Video Automation Service Account" \
     --project=$GCP_PROJECT_ID 2>&1) || {
-    if echo "$CREATE_SA_OUTPUT" | grep -q "already exists"; then
+    if [[ "$CREATE_SA_OUTPUT" == *"already exists"* ]]; then
         echo "Service account already exists"
     else
         echo -e "${RED}Error creating service account:${NC}"
@@ -168,7 +168,7 @@ echo -e "${YELLOW}Creating scheduler service account...${NC}"
 CREATE_SCHEDULER_SA_OUTPUT=$(gcloud iam service-accounts create video-automation-scheduler \
     --display-name="Video Automation Scheduler" \
     --project=$GCP_PROJECT_ID 2>&1) || {
-    if echo "$CREATE_SCHEDULER_SA_OUTPUT" | grep -q "already exists"; then
+    if [[ "$CREATE_SCHEDULER_SA_OUTPUT" == *"already exists"* ]]; then
         echo "Scheduler service account already exists"
     else
         echo -e "${RED}Error creating scheduler service account:${NC}"
@@ -202,7 +202,7 @@ CREATE_JOB_OUTPUT=$(gcloud scheduler jobs create http video-automation-daily \
     --min-backoff=60s \
     --max-backoff=3600s \
     --quiet 2>&1) || {
-        if echo "$CREATE_JOB_OUTPUT" | grep -q "already exists"; then
+        if [[ "$CREATE_JOB_OUTPUT" == *"already exists"* ]]; then
             echo -e "${YELLOW}Job already exists, updating...${NC}"
             gcloud scheduler jobs update http video-automation-daily \
                 --location=us-central1 \
