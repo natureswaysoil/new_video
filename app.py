@@ -204,19 +204,28 @@ def run_automation():
                 return jsonify({'error': f'Error reading config file: {str(e)}'}), 500
         
         else:
-            # Use default configuration
+            # Use default configuration from environment variables
+            gcp_project_id = os.getenv('GCP_PROJECT_ID')
+            spreadsheet_id = os.getenv('SPREADSHEET_ID')
+            
+            if not gcp_project_id:
+                return jsonify({'error': 'GCP_PROJECT_ID environment variable is required'}), 500
+            
+            if not spreadsheet_id:
+                return jsonify({'error': 'SPREADSHEET_ID environment variable is required'}), 500
+            
             config = {
-                'gcp_project_id': os.getenv('GCP_PROJECT_ID', 'your-project-id'),
-                'spreadsheet_id': os.getenv('SPREADSHEET_ID', '1LU2ahpzMqLB5FLYqiyDbXOfjTxbdp8U8'),
+                'gcp_project_id': gcp_project_id,
+                'spreadsheet_id': spreadsheet_id,
                 'products_per_run': int(os.getenv('PRODUCTS_PER_RUN', '1'))
             }
         
-        # Ensure required config fields
-        if 'gcp_project_id' not in config:
-            config['gcp_project_id'] = os.getenv('GCP_PROJECT_ID', 'your-project-id')
+        # Ensure required config fields are present
+        if 'gcp_project_id' not in config or not config['gcp_project_id']:
+            return jsonify({'error': 'gcp_project_id is required in config'}), 400
         
-        if 'spreadsheet_id' not in config:
-            config['spreadsheet_id'] = os.getenv('SPREADSHEET_ID', '1LU2ahpzMqLB5FLYqiyDbXOfjTxbdp8U8')
+        if 'spreadsheet_id' not in config or not config['spreadsheet_id']:
+            return jsonify({'error': 'spreadsheet_id is required in config'}), 400
         
         # Validate and limit products_per_run to prevent resource exhaustion
         products_per_run = config.get('products_per_run', 1)

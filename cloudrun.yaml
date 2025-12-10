@@ -42,7 +42,7 @@ spec:
         - name: GCP_PROJECT_ID
           value: PROJECT_ID
         - name: SPREADSHEET_ID
-          value: "1LU2ahpzMqLB5FLYqiyDbXOfjTxbdp8U8"
+          value: SPREADSHEET_ID  # Replace with your spreadsheet ID
         - name: PRODUCTS_PER_RUN
           value: "1"
         - name: LOG_LEVEL
