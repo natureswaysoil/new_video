@@ -1,0 +1,38 @@
+[Unit]
+Description=Video Automation Service
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=your_user
+Group=your_group
+WorkingDirectory=/path/to/video-automation
+
+# Environment variables
+Environment="GCP_PROJECT_ID=your-gcp-project-id"
+Environment="GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json"
+Environment="SCHEDULE_TYPE=daily"
+Environment="SCHEDULE_TIME=09:00"
+Environment="PRODUCTS_PER_RUN=1"
+
+# Start command
+ExecStart=/usr/bin/python3 /path/to/video-automation/scheduler.py
+
+# Restart policy
+Restart=always
+RestartSec=60
+
+# Logging
+StandardOutput=append:/var/log/video-automation/output.log
+StandardError=append:/var/log/video-automation/error.log
+
+# Security settings (optional but recommended)
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/path/to/video-automation
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  video-automation:
+    build: .
+    container_name: video-automation
+    restart: unless-stopped
+    environment:
+      # Google Cloud
+      - GCP_PROJECT_ID=${GCP_PROJECT_ID}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/credentials/service-account.json
+      
+      # Scheduling
+      - SCHEDULE_TYPE=${SCHEDULE_TYPE:-daily}
+      - SCHEDULE_TIME=${SCHEDULE_TIME:-09:00}
+      - SCHEDULE_INTERVAL_HOURS=${SCHEDULE_INTERVAL_HOURS:-4}
+      - PRODUCTS_PER_RUN=${PRODUCTS_PER_RUN:-1}
+      - RUN_ON_START=${RUN_ON_START:-false}
+      
+      # Logging
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    
+    volumes:
+      # Mount credentials
+      - ./credentials:/app/credentials:ro
+      
+      # Mount state file (persists progress)
+      - ./automation_state.json:/app/automation_state.json
+      
+      # Mount logs directory
+      - ./logs:/app/logs
+      
+      # Mount videos directory
+      - ./videos:/app/videos
+    
+    # Uncomment to run tests instead
+    # command: python test_setup.py
+    
+    # Uncomment to run once instead of scheduling
+    # command: python video_automation.py
