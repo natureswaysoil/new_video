@@ -2,6 +2,12 @@
 """
 Flask HTTP wrapper for Video Automation CLI
 Exposes the video automation as an HTTP service for Cloud Run
+
+NOTE: Job state is stored in-memory and will be lost on container restart.
+For production, consider using Redis or a database for persistent job tracking.
+Background jobs run in daemon threads and may be terminated if the container
+stops during processing. For critical workloads, consider using a task queue
+system like Cloud Tasks or Pub/Sub.
 """
 
 import os
@@ -24,7 +30,12 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 
-# In-memory job storage (for production, use Redis or database)
+# Configuration constants
+MAX_PRODUCTS_PER_RUN = 10  # Limit to prevent resource exhaustion
+
+# In-memory job storage
+# WARNING: Jobs will be lost on container restart
+# For production, use Redis or a database
 jobs = {}
 jobs_lock = threading.Lock()
 
@@ -156,7 +167,11 @@ def run_automation():
     }
     """
     try:
-        data = request.get_json(force=True, silent=True)
+        # Validate Content-Type header
+        if not request.is_json:
+            return jsonify({'error': 'Content-Type must be application/json'}), 400
+        
+        data = request.get_json(silent=True)
         
         if data is None:
             return jsonify({'error': 'Request body must be valid JSON'}), 400
@@ -203,10 +218,20 @@ def run_automation():
         if 'spreadsheet_id' not in config:
             config['spreadsheet_id'] = os.getenv('SPREADSHEET_ID', '1LU2ahpzMqLB5FLYqiyDbXOfjTxbdp8U8')
         
+        # Validate and limit products_per_run to prevent resource exhaustion
+        products_per_run = config.get('products_per_run', 1)
+        if not isinstance(products_per_run, int) or products_per_run < 1:
+            return jsonify({'error': 'products_per_run must be a positive integer'}), 400
+        if products_per_run > MAX_PRODUCTS_PER_RUN:
+            return jsonify({'error': f'products_per_run cannot exceed {MAX_PRODUCTS_PER_RUN}'}), 400
+        config['products_per_run'] = products_per_run
+        
         # Create job
         job_id = create_job(profile_id, config)
         
         # Start background thread
+        # NOTE: Daemon threads will be terminated if container stops
+        # For critical workloads, use a task queue system
         thread = threading.Thread(
             target=run_automation_job,
             args=(job_id, profile_id, config),

@@ -30,4 +30,5 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Run the Flask app with gunicorn
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app
+# Timeout set to 30 minutes (1800s) for long-running video processing jobs
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 1800 app:app
