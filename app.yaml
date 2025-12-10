@@ -1,0 +1,43 @@
+# Google App Engine configuration
+# This is an alternative deployment option to Cloud Run
+# Note: App Engine Standard has limited long-running support
+# Consider using Cloud Run or Compute Engine for long-running tasks
+
+runtime: python311
+
+# Instance class - adjust based on needs
+instance_class: F2
+
+# Automatic scaling configuration
+automatic_scaling:
+  min_instances: 0
+  max_instances: 1
+  target_cpu_utilization: 0.65
+
+# Environment variables
+env_variables:
+  SCHEDULE_TYPE: 'daily'
+  SCHEDULE_TIME: '09:00'
+  PRODUCTS_PER_RUN: '1'
+  RUN_ON_START: 'false'
+  LOG_LEVEL: 'INFO'
+
+# Entrypoint
+entrypoint: python scheduler.py
+
+# Handlers - not needed for scheduler but required
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+
+# Files to skip uploading
+skip_files:
+  - ^(.*/)?#.*#$
+  - ^(.*/)?.*~$
+  - ^(.*/)?.*\.py[co]$
+  - ^(.*/)?.*/RCS/.*$
+  - ^(.*/)?\..*$
+  - ^(.*/)?.*\.md$
+  - ^(.*/)?tests/.*$
+  - ^(.*/)?node_modules/.*$

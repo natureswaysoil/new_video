@@ -1,0 +1,59 @@
+# Cloud Run service configuration
+# This file can be used with: gcloud run services replace cloudrun.yaml
+
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: video-automation
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+      annotations:
+        # Allocate more CPU and memory for video processing
+        run.googleapis.com/cpu-throttling: 'false'
+        # Maximum execution time (1 hour)
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      # Timeout for requests (max 3600 for Cloud Run)
+      timeoutSeconds: 3600
+      
+      # Service account to use (should have Secret Manager access)
+      serviceAccountName: video-automation-sa@PROJECT_ID.iam.gserviceaccount.com
+      
+      containers:
+      - name: video-automation
+        # Image will be built by Cloud Build
+        image: gcr.io/PROJECT_ID/video-automation:latest
+        
+        # Resources
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: '2'
+        
+        # Environment variables
+        env:
+        - name: GCP_PROJECT_ID
+          value: PROJECT_ID
+        - name: SCHEDULE_TYPE
+          value: daily
+        - name: SCHEDULE_TIME
+          value: "09:00"
+        - name: PRODUCTS_PER_RUN
+          value: "1"
+        - name: RUN_ON_START
+          value: "false"
+        - name: LOG_LEVEL
+          value: INFO
+        
+        # Health check - optional
+        livenessProbe:
+          initialDelaySeconds: 10
+          periodSeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080

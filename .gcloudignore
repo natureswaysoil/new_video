@@ -1,0 +1,87 @@
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore
+
+# If you would like to upload your .git directory, .gitignore file or files
+# from your .gitignore file, remove the corresponding line below:
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+virtualenv/
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Credentials and secrets (never upload these!)
+*.json
+!cloudbuild.yaml
+!cloudrun.yaml
+!scheduler.yaml
+!requirements.txt
+service-account*.json
+*-oauth.json
+credentials/
+.env
+*.pem
+*.key
+
+# State and logs
+automation_state.json
+*.log
+logs/
+
+# Videos and media
+videos/
+*.mp4
+*.mov
+*.avi
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# Tests (not needed in production)
+test/
+tests/
+*_test.py
+test_*.py
+
+# Git and CI
+.github/
+.git/
+.gitattributes
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Docker files (not needed for Cloud Build)
+docker-compose*.yml
+Dockerfile.dev
+
+# Shell scripts (not needed in container)
+*.sh
+!entrypoint.sh

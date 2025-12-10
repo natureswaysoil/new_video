@@ -1,0 +1,52 @@
+# Cloud Scheduler job configuration
+# This triggers the video automation on a schedule
+
+# Job 1: Daily automation run
+- name: video-automation-daily
+  description: 'Daily video automation run'
+  schedule: '0 9 * * *'  # 9:00 AM every day (UTC)
+  timeZone: 'America/New_York'  # Adjust to your timezone
+  httpTarget:
+    uri: 'https://video-automation-PROJECT_ID.a.run.app'
+    httpMethod: POST
+    headers:
+      Content-Type: 'application/json'
+    body: 'eyJydW5fdHlwZSI6ICJzY2hlZHVsZWQifQ=='  # Base64 encoded: {"run_type": "scheduled"}
+    oidcToken:
+      serviceAccountEmail: 'video-automation-sa@PROJECT_ID.iam.gserviceaccount.com'
+  retryConfig:
+    retryCount: 3
+    maxRetryDuration: 600s
+    minBackoffDuration: 60s
+    maxBackoffDuration: 3600s
+
+# Job 2: Alternative - multiple times per day
+# - name: video-automation-morning
+#   description: 'Morning video automation run'
+#   schedule: '0 9 * * *'  # 9:00 AM
+#   timeZone: 'America/New_York'
+#   httpTarget:
+#     uri: 'https://video-automation-PROJECT_ID.a.run.app'
+#     httpMethod: POST
+#     oidcToken:
+#       serviceAccountEmail: 'video-automation-sa@PROJECT_ID.iam.gserviceaccount.com'
+
+# - name: video-automation-afternoon
+#   description: 'Afternoon video automation run'
+#   schedule: '0 14 * * *'  # 2:00 PM
+#   timeZone: 'America/New_York'
+#   httpTarget:
+#     uri: 'https://video-automation-PROJECT_ID.a.run.app'
+#     httpMethod: POST
+#     oidcToken:
+#       serviceAccountEmail: 'video-automation-sa@PROJECT_ID.iam.gserviceaccount.com'
+
+# - name: video-automation-evening
+#   description: 'Evening video automation run'
+#   schedule: '0 20 * * *'  # 8:00 PM
+#   timeZone: 'America/New_York'
+#   httpTarget:
+#     uri: 'https://video-automation-PROJECT_ID.a.run.app'
+#     httpMethod: POST
+#     oidcToken:
+#       serviceAccountEmail: 'video-automation-sa@PROJECT_ID.iam.gserviceaccount.com'

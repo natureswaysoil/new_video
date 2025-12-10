@@ -24,9 +24,25 @@ Complete automation system that reads products from Google Sheets, generates scr
    - Pinterest
    - Twitter
 
-## 🚀 Installation
+## 🚀 Quick Deployment Options
 
-### 1. Clone and Install Dependencies
+### Option 1: Deploy to Google Cloud Platform (Recommended)
+
+**Deploy in 5 minutes with a single command!**
+
+```bash
+export GCP_PROJECT_ID=your-project-id
+./deploy-gcp-all.sh
+```
+
+This will deploy the entire system to Google Cloud Run with Cloud Scheduler for automated daily runs.
+
+📖 **See [QUICKSTART_GCP.md](QUICKSTART_GCP.md)** for the 5-minute deployment guide  
+📖 **See [DEPLOY_TO_GCP.md](DEPLOY_TO_GCP.md)** for comprehensive GCP deployment documentation
+
+### Option 2: Local Installation
+
+For local development or self-hosted deployment:
 
 ```bash
 # Install Python dependencies
@@ -36,11 +52,8 @@ pip install -r requirements.txt
 curl https://sdk.cloud.google.com | bash
 exec -l $SHELL
 gcloud init
-```
 
-### 2. Set Environment Variables
-
-```bash
+# Set environment variables
 export GCP_PROJECT_ID="your-gcp-project-id"
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
 ```
@@ -279,21 +292,41 @@ payload = {
 
 ## 🎬 Usage
 
-### Run Once
+### Cloud Deployment (Recommended)
+
+After deploying to Google Cloud Platform:
+
+```bash
+# View logs
+gcloud run services logs tail video-automation --region=us-central1
+
+# Trigger manually
+gcloud scheduler jobs run video-automation-daily --location=us-central1
+
+# Update configuration
+gcloud run services update video-automation --region=us-central1 \
+    --set-env-vars PRODUCTS_PER_RUN=3
+```
+
+**The system runs automatically on schedule - no manual intervention needed!**
+
+### Local Execution
+
+#### Run Once
 
 Process one product:
 ```bash
 python video_automation.py
 ```
 
-### Run with Scheduler
+#### Run with Scheduler
 
 Continuous automation with scheduling:
 ```bash
 python scheduler.py
 ```
 
-### Run as Background Service
+#### Run as Background Service
 
 Using systemd (Linux):
 
