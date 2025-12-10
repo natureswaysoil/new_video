@@ -40,7 +40,7 @@ echo -e "${YELLOW}Setting up service account for Cloud Scheduler...${NC}"
 CREATE_SA_OUTPUT=$(gcloud iam service-accounts create video-automation-scheduler \
     --display-name="Video Automation Scheduler" \
     --project=$GCP_PROJECT_ID 2>&1) || {
-    if echo "$CREATE_SA_OUTPUT" | grep -q "already exists"; then
+    if [[ "$CREATE_SA_OUTPUT" == *"already exists"* ]]; then
         echo "Service account already exists"
     else
         echo -e "${RED}Error creating service account:${NC}"
@@ -73,7 +73,7 @@ CREATE_JOB_OUTPUT=$(gcloud scheduler jobs create http video-automation-daily \
     --max-retry-duration=600s \
     --min-backoff=60s \
     --max-backoff=3600s 2>&1) || {
-        if echo "$CREATE_JOB_OUTPUT" | grep -q "already exists"; then
+        if [[ "$CREATE_JOB_OUTPUT" == *"already exists"* ]]; then
             echo -e "${YELLOW}Job already exists, updating...${NC}"
             gcloud scheduler jobs update http video-automation-daily \
                 --location=us-central1 \
