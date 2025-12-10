@@ -26,13 +26,10 @@ dist/
 *.egg
 
 # Credentials and secrets (never upload these!)
-*.json
-!cloudbuild.yaml
-!cloudrun.yaml
-!scheduler.yaml
-!requirements.txt
 service-account*.json
 *-oauth.json
+credentials*.json
+*-credentials.json
 credentials/
 .env
 *.pem

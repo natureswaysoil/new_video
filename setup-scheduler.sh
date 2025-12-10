@@ -37,9 +37,17 @@ echo ""
 SA_EMAIL="video-automation-scheduler@$GCP_PROJECT_ID.iam.gserviceaccount.com"
 
 echo -e "${YELLOW}Setting up service account for Cloud Scheduler...${NC}"
-gcloud iam service-accounts create video-automation-scheduler \
+CREATE_SA_OUTPUT=$(gcloud iam service-accounts create video-automation-scheduler \
     --display-name="Video Automation Scheduler" \
-    --project=$GCP_PROJECT_ID 2>/dev/null || echo "Service account already exists"
+    --project=$GCP_PROJECT_ID 2>&1) || {
+    if echo "$CREATE_SA_OUTPUT" | grep -q "already exists"; then
+        echo "Service account already exists"
+    else
+        echo -e "${RED}Error creating service account:${NC}"
+        echo "$CREATE_SA_OUTPUT"
+        exit 1
+    fi
+}
 
 # Grant permission to invoke Cloud Run
 echo -e "${YELLOW}Granting Cloud Run Invoker permission...${NC}"
@@ -51,7 +59,7 @@ gcloud run services add-iam-policy-binding video-automation \
 # Create Cloud Scheduler job
 echo ""
 echo -e "${YELLOW}Creating Cloud Scheduler job...${NC}"
-gcloud scheduler jobs create http video-automation-daily \
+CREATE_JOB_OUTPUT=$(gcloud scheduler jobs create http video-automation-daily \
     --location=us-central1 \
     --schedule="0 9 * * *" \
     --time-zone="America/New_York" \
@@ -64,13 +72,19 @@ gcloud scheduler jobs create http video-automation-daily \
     --max-retry-attempts=3 \
     --max-retry-duration=600s \
     --min-backoff=60s \
-    --max-backoff=3600s 2>/dev/null || {
-        echo -e "${YELLOW}Job already exists, updating...${NC}"
-        gcloud scheduler jobs update http video-automation-daily \
-            --location=us-central1 \
-            --schedule="0 9 * * *" \
-            --time-zone="America/New_York" \
-            --uri="$SERVICE_URL"
+    --max-backoff=3600s 2>&1) || {
+        if echo "$CREATE_JOB_OUTPUT" | grep -q "already exists"; then
+            echo -e "${YELLOW}Job already exists, updating...${NC}"
+            gcloud scheduler jobs update http video-automation-daily \
+                --location=us-central1 \
+                --schedule="0 9 * * *" \
+                --time-zone="America/New_York" \
+                --uri="$SERVICE_URL"
+        else
+            echo -e "${RED}Error creating scheduler job:${NC}"
+            echo "$CREATE_JOB_OUTPUT"
+            exit 1
+        fi
     }
 
 echo ""
