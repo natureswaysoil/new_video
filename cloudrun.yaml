@@ -41,21 +41,34 @@ spec:
         env:
         - name: GCP_PROJECT_ID
           value: PROJECT_ID
-        - name: SCHEDULE_TYPE
-          value: daily
-        - name: SCHEDULE_TIME
-          value: "09:00"
+        - name: SPREADSHEET_ID
+          value: "1LU2ahpzMqLB5FLYqiyDbXOfjTxbdp8U8"
         - name: PRODUCTS_PER_RUN
           value: "1"
-        - name: RUN_ON_START
-          value: "false"
         - name: LOG_LEVEL
           value: INFO
+        - name: PORT
+          value: "8080"
+        
+        # Port configuration
+        ports:
+        - name: http1
+          containerPort: 8080
         
         # Health check - optional
         livenessProbe:
           initialDelaySeconds: 10
           periodSeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 3
+          httpGet:
+            path: /health
+            port: 8080
+        
+        # Startup probe for initial health check
+        startupProbe:
+          initialDelaySeconds: 5
+          periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
           httpGet:
