@@ -1,0 +1,79 @@
+2025-12-10 22:38:00,762 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.1.0.21:8080
+2025-12-10 22:38:00,762 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-12-10 22:38:19,769 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:38:19] "GET /health HTTP/1.1" 200 -
+2025-12-10 22:38:19,770 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:38:19] "GET / HTTP/1.1" 200 -
+2025-12-10 22:38:30,063 - __main__ - INFO - Created job ad2d31bc-f0b6-4cb0-b983-4722bb9458ef for profile test-profile
+2025-12-10 22:38:30,063 - __main__ - INFO - Job ad2d31bc-f0b6-4cb0-b983-4722bb9458ef status updated to running
+2025-12-10 22:38:30,063 - __main__ - INFO - Starting automation job ad2d31bc-f0b6-4cb0-b983-4722bb9458ef
+2025-12-10 22:38:30,064 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:38:30] "[35m[1mPOST /run HTTP/1.1[0m" 202 -
+2025-12-10 22:38:33,070 - google.auth.compute_engine._metadata - WARNING - Compute Engine Metadata server unavailable on attempt 1 of 3. Reason: timed out
+2025-12-10 22:38:36,073 - google.auth.compute_engine._metadata - WARNING - Compute Engine Metadata server unavailable on attempt 2 of 3. Reason: timed out
+2025-12-10 22:38:38,420 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:38:38] "GET /status/ad2d31bc-f0b6-4cb0-b983-4722bb9458ef HTTP/1.1" 200 -
+2025-12-10 22:38:39,074 - google.auth.compute_engine._metadata - WARNING - Compute Engine Metadata server unavailable on attempt 3 of 3. Reason: timed out
+2025-12-10 22:38:39,074 - google.auth._default - WARNING - Authentication failed using Compute Engine authentication due to unavailable metadata server.
+2025-12-10 22:38:39,074 - __main__ - ERROR - Job ad2d31bc-f0b6-4cb0-b983-4722bb9458ef failed: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+Traceback (most recent call last):
+  File "/home/runner/work/new_video/new_video/app.py", line 88, in run_automation_job
+    automation = VideoAutomation(config)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/new_video/new_video/video_automation.py", line 514, in __init__
+    self.secret_manager = SecretManager(config['gcp_project_id'])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/new_video/new_video/video_automation.py", line 39, in __init__
+    self.client = secretmanager.SecretManagerServiceClient()
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/google/cloud/secretmanager_v1/services/secret_manager_service/client.py", line 481, in __init__
+    self._transport = Transport(
+                      ^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/google/cloud/secretmanager_v1/services/secret_manager_service/transports/grpc.py", line 157, in __init__
+    super().__init__(
+  File "/home/runner/.local/lib/python3.12/site-packages/google/cloud/secretmanager_v1/services/secret_manager_service/transports/base.py", line 100, in __init__
+    credentials, _ = google.auth.default(
+                     ^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/.local/lib/python3.12/site-packages/google/auth/_default.py", line 691, in default
+    raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+2025-12-10 22:38:39,076 - __main__ - INFO - Job ad2d31bc-f0b6-4cb0-b983-4722bb9458ef status updated to failed
+2025-12-10 22:38:52,431 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:38:52] "GET /status/ad2d31bc-f0b6-4cb0-b983-4722bb9458ef HTTP/1.1" 200 -
+2025-12-10 22:39:02,752 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:02] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:39:02,753 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:02] "[33mGET /status/nonexistent-job-id HTTP/1.1[0m" 404 -
+2025-12-10 22:39:11,716 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:11] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:39:20,292 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:20] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:39:59,516 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8081
+ * Running on http://10.1.0.21:8081
+2025-12-10 22:39:59,516 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-12-10 22:39:59,860 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:59] "GET /health HTTP/1.1" 200 -
+2025-12-10 22:39:59,862 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:59] "GET / HTTP/1.1" 200 -
+2025-12-10 22:39:59,864 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:59] "GET /health HTTP/1.1" 200 -
+2025-12-10 22:39:59,866 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:39:59] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:40:08,308 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8082
+ * Running on http://10.1.0.21:8082
+2025-12-10 22:40:08,309 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-12-10 22:40:17,836 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:17] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:40:51,366 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8081
+ * Running on http://10.1.0.21:8081
+2025-12-10 22:40:51,367 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-12-10 22:40:51,707 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:51] "GET /health HTTP/1.1" 200 -
+2025-12-10 22:40:51,709 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:51] "GET / HTTP/1.1" 200 -
+2025-12-10 22:40:51,711 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:51] "GET /health HTTP/1.1" 200 -
+2025-12-10 22:40:51,713 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:51] "[31m[1mPOST /run HTTP/1.1[0m" 400 -
+2025-12-10 22:40:51,714 - __main__ - INFO - Created job 7e937cfd-483a-4f3b-a3b8-7cb39253b037 for profile test-profile
+2025-12-10 22:40:51,714 - __main__ - INFO - Job 7e937cfd-483a-4f3b-a3b8-7cb39253b037 status updated to running
+2025-12-10 22:40:51,715 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:51] "[35m[1mPOST /run HTTP/1.1[0m" 202 -
+2025-12-10 22:40:51,715 - __main__ - INFO - Starting automation job 7e937cfd-483a-4f3b-a3b8-7cb39253b037
+2025-12-10 22:40:53,718 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:53] "GET /status/7e937cfd-483a-4f3b-a3b8-7cb39253b037 HTTP/1.1" 200 -
+2025-12-10 22:40:53,720 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:53] "[33mGET /status/nonexistent-job-id HTTP/1.1[0m" 404 -
+2025-12-10 22:40:53,722 - __main__ - INFO - Created job 09872cf3-e44c-4586-9640-444a8250fa33 for profile test-profile
+2025-12-10 22:40:53,722 - __main__ - INFO - Job 09872cf3-e44c-4586-9640-444a8250fa33 status updated to running
+2025-12-10 22:40:53,722 - __main__ - INFO - Starting automation job 09872cf3-e44c-4586-9640-444a8250fa33
+2025-12-10 22:40:53,723 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:53] "[35m[1mPOST /run HTTP/1.1[0m" 202 -
+2025-12-10 22:40:53,725 - werkzeug - INFO - 127.0.0.1 - - [10/Dec/2025 22:40:53] "[31m[1mPOST /run HTTP/1.1[0m" 400 -

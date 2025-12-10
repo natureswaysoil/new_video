@@ -156,10 +156,10 @@ def run_automation():
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(force=True, silent=True)
         
-        if not data:
-            return jsonify({'error': 'Request body must be JSON'}), 400
+        if data is None:
+            return jsonify({'error': 'Request body must be valid JSON'}), 400
         
         profile_id = data.get('profile_id')
         if not profile_id:
