@@ -11,7 +11,8 @@
     httpMethod: POST
     headers:
       Content-Type: 'application/json'
-    body: 'eyJydW5fdHlwZSI6ICJzY2hlZHVsZWQifQ=='  # Base64 encoded: {"run_type": "scheduled"}
+    body: |
+      {"run_type": "scheduled"}
     oidcToken:
       serviceAccountEmail: 'video-automation-sa@PROJECT_ID.iam.gserviceaccount.com'
   retryConfig:

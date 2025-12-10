@@ -61,8 +61,8 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
 # Optional: Grant storage permissions if saving videos to GCS
 echo ""
 echo -e "${YELLOW}Do you want to grant Cloud Storage permissions? (y/n)${NC}"
-read -r response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+read -r storage_response
+if [[ "$storage_response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo -e "${YELLOW}Granting Storage Object Admin role...${NC}"
     gcloud projects add-iam-policy-binding $GCP_PROJECT_ID \
         --member="serviceAccount:$SA_EMAIL" \
@@ -73,8 +73,8 @@ fi
 echo ""
 echo -e "${YELLOW}Do you want to download the service account key? (y/n)${NC}"
 echo "(This is only needed for local development)"
-read -r response
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+read -r key_response
+if [[ "$key_response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     KEY_FILE="$SA_NAME-key.json"
     echo -e "${YELLOW}Downloading service account key to $KEY_FILE...${NC}"
     gcloud iam service-accounts keys create $KEY_FILE \
@@ -99,7 +99,7 @@ echo "- secretmanager.secretAccessor"
 echo "- run.serviceAgent"
 echo "- logging.logWriter"
 echo "- monitoring.metricWriter"
-if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+if [[ "$storage_response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "- storage.objectAdmin (optional)"
 fi
 echo ""

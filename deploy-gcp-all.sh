@@ -64,9 +64,9 @@ echo "5. Set up Cloud Scheduler for automation"
 echo ""
 echo -e "${YELLOW}Estimated time: 5-10 minutes${NC}"
 echo ""
-read -p "Continue? (y/n) " -n 1 -r
+read -p "Continue? (y/n) " -r response
 echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+if [[ ! $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Deployment cancelled."
     exit 0
 fi
