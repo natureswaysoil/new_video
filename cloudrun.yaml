@@ -1,5 +1,9 @@
 # Cloud Run service configuration
-# This file can be used with: gcloud run services replace cloudrun.yaml
+# NOTE: This is a TEMPLATE file. Replace all instances of PROJECT_ID with your actual GCP project ID.
+# Usage: 
+#   1. Replace PROJECT_ID with your project ID
+#   2. Deploy with: gcloud run services replace cloudrun.yaml
+# OR use the deployment scripts instead: ./deploy-cloudrun.sh
 
 apiVersion: serving.knative.dev/v1
 kind: Service

@@ -61,6 +61,7 @@ gcloud run deploy video-automation \
     --cpu 2 \
     --timeout 3600 \
     --no-allow-unauthenticated \
+    --service-account video-automation-sa@$GCP_PROJECT_ID.iam.gserviceaccount.com \
     --set-env-vars GCP_PROJECT_ID=$GCP_PROJECT_ID,SCHEDULE_TYPE=daily,SCHEDULE_TIME=09:00,PRODUCTS_PER_RUN=1,RUN_ON_START=false
 
 # Get the service URL

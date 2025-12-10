@@ -1,5 +1,7 @@
 # Cloud Scheduler job configuration
-# This triggers the video automation on a schedule
+# NOTE: This is a TEMPLATE file. Replace PROJECT_ID placeholders with your actual GCP project ID.
+# Usage: Use the setup-scheduler.sh script instead of using this file directly.
+# The script automatically uses the correct service URL and project ID.
 
 # Job 1: Daily automation run
 - name: video-automation-daily
