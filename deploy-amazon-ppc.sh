@@ -16,7 +16,7 @@ echo -e "${GREEN}========================================${NC}"
 
 # Check if PROJECT_ID is set
 if [ -z "$GCP_PROJECT_ID" ]; then
-    echo -e "${RED}Error: GCP_PROJECT_ID environment variable is not set${NC}"
+    echo -e "${RED}Error: GCP_PROJECT_ID environment variable is not set or empty${NC}"
     echo "Usage: export GCP_PROJECT_ID=your-project-id && ./deploy-amazon-ppc.sh"
     exit 1
 fi

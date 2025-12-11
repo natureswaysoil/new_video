@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class AmazonPPCOptimizer:
     """Handles Amazon PPC campaign reporting and optimization"""
     
-    def __init__(self, api_endpoint: str, access_token: str, client_id: str = None):
+    def __init__(self, api_endpoint: str, access_token: str, client_id: Optional[str] = None):
         """
         Initialize the Amazon PPC Optimizer
         

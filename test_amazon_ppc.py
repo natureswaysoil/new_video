@@ -7,6 +7,7 @@ Validates that the payload structure is correct and includes the required adProd
 import json
 import sys
 from datetime import datetime, timedelta
+from amazon_ppc_optimizer import AmazonPPCOptimizer
 
 
 def test_payload_structure():
@@ -63,8 +64,6 @@ def test_payload_structure():
 def test_date_range_generation():
     """Test date range generation"""
     print("\n\nTesting date range generation...")
-    
-    from amazon_ppc_optimizer import AmazonPPCOptimizer
     
     # Create a test instance (with dummy credentials)
     try:
