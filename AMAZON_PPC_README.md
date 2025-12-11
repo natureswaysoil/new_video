@@ -70,7 +70,8 @@ from amazon_ppc_optimizer import AmazonPPCOptimizer
 # Initialize the optimizer
 optimizer = AmazonPPCOptimizer(
     api_endpoint="https://advertising-api.amazon.com",
-    access_token="your-access-token"
+    access_token="your-access-token",
+    client_id="your-client-id"  # Required
 )
 
 # Create a campaign report
@@ -100,6 +101,16 @@ python amazon_ppc_optimizer.py
 
 ```bash
 export GCP_PROJECT_ID=your-project-id
+
+# Interactive mode (will prompt for Cloud Run deployment)
+./deploy-amazon-ppc.sh
+
+# Non-interactive mode (skip Cloud Run deployment)
+export DEPLOY_TO_CLOUD_RUN=no
+./deploy-amazon-ppc.sh
+
+# Non-interactive mode (auto-deploy to Cloud Run)
+export DEPLOY_TO_CLOUD_RUN=yes
 ./deploy-amazon-ppc.sh
 ```
 

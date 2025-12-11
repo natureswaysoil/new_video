@@ -67,10 +67,15 @@ def test_date_range_generation():
     from amazon_ppc_optimizer import AmazonPPCOptimizer
     
     # Create a test instance (with dummy credentials)
-    optimizer = AmazonPPCOptimizer(
-        api_endpoint="https://advertising-api.amazon.com",
-        access_token="test-token"
-    )
+    try:
+        optimizer = AmazonPPCOptimizer(
+            api_endpoint="https://advertising-api.amazon.com",
+            access_token="test-token",
+            client_id="test-client-id"
+        )
+    except Exception as e:
+        print(f"  ✗ FAIL: Could not create optimizer instance: {e}")
+        return False
     
     # Generate date range
     start_date, end_date = optimizer.generate_date_range(days_back=7)

@@ -26,19 +26,26 @@ logger = logging.getLogger(__name__)
 class AmazonPPCOptimizer:
     """Handles Amazon PPC campaign reporting and optimization"""
     
-    def __init__(self, api_endpoint: str, access_token: str):
+    def __init__(self, api_endpoint: str, access_token: str, client_id: str = None):
         """
         Initialize the Amazon PPC Optimizer
         
         Args:
             api_endpoint: The Amazon Advertising API endpoint
             access_token: API access token for authentication
+            client_id: Amazon Advertising API client ID (optional, defaults to env var)
         """
         self.api_endpoint = api_endpoint
+        
+        # Get client ID from parameter or environment variable
+        client_id = client_id or os.getenv("AMAZON_CLIENT_ID")
+        if not client_id:
+            raise ValueError("AMAZON_CLIENT_ID is required. Provide it as a parameter or set the environment variable.")
+        
         self.headers = {
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
-            "Amazon-Advertising-API-ClientId": os.getenv("AMAZON_CLIENT_ID", ""),
+            "Amazon-Advertising-API-ClientId": client_id,
         }
     
     def create_campaign_report(
@@ -159,12 +166,17 @@ def main():
     # Example usage
     api_endpoint = os.getenv("AMAZON_API_ENDPOINT", "https://advertising-api.amazon.com")
     access_token = os.getenv("AMAZON_ACCESS_TOKEN", "")
+    client_id = os.getenv("AMAZON_CLIENT_ID", "")
     
     if not access_token:
         logger.error("AMAZON_ACCESS_TOKEN environment variable is required")
         return
     
-    optimizer = AmazonPPCOptimizer(api_endpoint, access_token)
+    if not client_id:
+        logger.error("AMAZON_CLIENT_ID environment variable is required")
+        return
+    
+    optimizer = AmazonPPCOptimizer(api_endpoint, access_token, client_id)
     
     # Generate date range (last 7 days)
     start_date, end_date = optimizer.generate_date_range(days_back=7)

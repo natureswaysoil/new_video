@@ -64,9 +64,23 @@ echo -e "${GREEN}✓ Image pushed successfully${NC}"
 
 # Step 5: Deploy to Cloud Run (optional)
 echo -e "${GREEN}[5/5] Deploying to Cloud Run...${NC}"
-read -p "Do you want to deploy to Cloud Run? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
+
+# Check if DEPLOY_TO_CLOUD_RUN is set to skip interactive prompt
+if [ "${DEPLOY_TO_CLOUD_RUN}" == "yes" ] || [ "${DEPLOY_TO_CLOUD_RUN}" == "true" ]; then
+    DEPLOY="yes"
+elif [ "${DEPLOY_TO_CLOUD_RUN}" == "no" ] || [ "${DEPLOY_TO_CLOUD_RUN}" == "false" ]; then
+    DEPLOY="no"
+else
+    read -p "Do you want to deploy to Cloud Run? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        DEPLOY="yes"
+    else
+        DEPLOY="no"
+    fi
+fi
+
+if [ "$DEPLOY" == "yes" ]; then
     gcloud run deploy $SERVICE_NAME \
         --image=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest \
         --region=$REGION \
