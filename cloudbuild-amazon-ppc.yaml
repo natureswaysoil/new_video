@@ -1,0 +1,62 @@
+# Cloud Build configuration for Amazon PPC Optimizer
+# Builds and pushes to us-central1-docker.pkg.dev
+
+steps:
+  # Build the container image for Amazon PPC Optimizer
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-f'
+      - 'Dockerfile.amazon-ppc'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:$COMMIT_SHA'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:latest'
+      - '.'
+    id: 'build-amazon-ppc-image'
+
+  # Push the container image with commit SHA tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:$COMMIT_SHA'
+    id: 'push-amazon-ppc-image-sha'
+
+  # Push the container image with latest tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:latest'
+    id: 'push-amazon-ppc-image-latest'
+
+  # Deploy to Cloud Run (optional - uncomment to auto-deploy)
+  # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  #   entrypoint: gcloud
+  #   args:
+  #     - 'run'
+  #     - 'deploy'
+  #     - 'amazon-ppc-optimizer'
+  #     - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:$COMMIT_SHA'
+  #     - '--region=us-central1'
+  #     - '--platform=managed'
+  #     - '--allow-unauthenticated'
+  #     - '--memory=1Gi'
+  #     - '--cpu=1'
+  #     - '--timeout=900'
+  #     - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+  #   id: 'deploy-amazon-ppc-cloud-run'
+
+# Images to be pushed to Artifact Registry
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:$COMMIT_SHA'
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:latest'
+
+# Build timeout
+timeout: 1200s
+
+options:
+  # Use a machine type with more resources for faster builds
+  machineType: 'N1_HIGHCPU_8'
+  
+  # Logging options
+  logging: CLOUD_LOGGING_ONLY

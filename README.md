@@ -12,6 +12,13 @@ Complete automation system that reads products from Google Sheets, generates scr
 - ✅ Secure credential management with Google Secret Manager
 - ✅ Comprehensive logging and error handling
 - ✅ Flexible scheduling options
+- ✅ **NEW:** Amazon PPC Optimizer with corrected API configuration
+
+## 📊 Amazon PPC Optimizer
+
+This repository now includes an Amazon PPC optimizer module for fetching campaign reports from the Amazon Advertising API. The implementation includes the properly configured payload with the required `adProduct` field.
+
+📖 **See [AMAZON_PPC_README.md](AMAZON_PPC_README.md)** for complete Amazon PPC optimizer documentation and deployment instructions.
 
 ## 📋 Prerequisites
 
