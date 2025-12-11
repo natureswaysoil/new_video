@@ -24,6 +24,21 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+# Mapping of report types to adProduct values
+REPORT_TYPE_TO_AD_PRODUCT = {
+    "spCampaigns": "SPONSORED_PRODUCTS",
+    "spAdGroups": "SPONSORED_PRODUCTS",
+    "spKeywords": "SPONSORED_PRODUCTS",
+    "spTargets": "SPONSORED_PRODUCTS",
+    "sbCampaigns": "SPONSORED_BRANDS",
+    "sbAdGroups": "SPONSORED_BRANDS",
+    "sbKeywords": "SPONSORED_BRANDS",
+    "sdCampaigns": "SPONSORED_DISPLAY",
+    "sdAdGroups": "SPONSORED_DISPLAY",
+    "sdTargets": "SPONSORED_DISPLAY"
+}
+
+
 class AmazonPPCOptimizer:
     """Handles Amazon PPC campaign reporting and optimization"""
     
@@ -72,22 +87,10 @@ class AmazonPPCOptimizer:
             if columns is None:
                 columns = ["campaignName", "impressions", "clicks", "cost"]
             
-            # Map report_type to adProduct
-            report_type_to_ad_product = {
-                "spCampaigns": "SPONSORED_PRODUCTS",
-                "spAdGroups": "SPONSORED_PRODUCTS",
-                "spKeywords": "SPONSORED_PRODUCTS",
-                "spTargets": "SPONSORED_PRODUCTS",
-                "sbCampaigns": "SPONSORED_BRANDS",
-                "sbAdGroups": "SPONSORED_BRANDS",
-                "sbKeywords": "SPONSORED_BRANDS",
-                "sdCampaigns": "SPONSORED_DISPLAY",
-                "sdAdGroups": "SPONSORED_DISPLAY",
-                "sdTargets": "SPONSORED_DISPLAY"
-            }
-            ad_product = report_type_to_ad_product.get(report_type)
+            # Get adProduct based on report_type
+            ad_product = REPORT_TYPE_TO_AD_PRODUCT.get(report_type)
             if not ad_product:
-                raise ValueError(f"Unsupported report_type '{report_type}'. Supported types: {list(report_type_to_ad_product.keys())}")
+                raise ValueError(f"Unsupported report_type '{report_type}'. Supported types: {list(REPORT_TYPE_TO_AD_PRODUCT.keys())}")
             
             # ✅ CORRECTED payload with dynamic adProduct field
             payload = {

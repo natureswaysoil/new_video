@@ -7,7 +7,7 @@ Validates that the payload structure is correct and includes the required adProd
 import json
 import sys
 from datetime import datetime
-from amazon_ppc_optimizer import AmazonPPCOptimizer
+from amazon_ppc_optimizer import AmazonPPCOptimizer, REPORT_TYPE_TO_AD_PRODUCT
 
 
 def test_payload_structure():
@@ -30,20 +30,8 @@ def test_payload_structure():
         end_date = "2025-12-09"
         columns = ["campaignName", "impressions", "clicks", "cost"]
         
-        # Map report_type to adProduct (same logic as in amazon_ppc_optimizer.py)
-        report_type_to_ad_product = {
-            "spCampaigns": "SPONSORED_PRODUCTS",
-            "spAdGroups": "SPONSORED_PRODUCTS",
-            "spKeywords": "SPONSORED_PRODUCTS",
-            "spTargets": "SPONSORED_PRODUCTS",
-            "sbCampaigns": "SPONSORED_BRANDS",
-            "sbAdGroups": "SPONSORED_BRANDS",
-            "sbKeywords": "SPONSORED_BRANDS",
-            "sdCampaigns": "SPONSORED_DISPLAY",
-            "sdAdGroups": "SPONSORED_DISPLAY",
-            "sdTargets": "SPONSORED_DISPLAY"
-        }
-        ad_product = report_type_to_ad_product.get(report_type)
+        # Get adProduct from the shared constant
+        ad_product = REPORT_TYPE_TO_AD_PRODUCT.get(report_type)
         
         # ✅ CORRECTED payload with dynamic adProduct field
         payload = {
