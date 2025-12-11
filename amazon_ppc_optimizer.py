@@ -12,11 +12,12 @@ from typing import Dict, Optional
 import requests
 
 # Configure logging
+# Use console-only logging for cloud deployments (Cloud Run, etc.)
+# In containerized environments, logs should go to stdout/stderr for proper log collection
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('amazon_ppc_optimizer.log'),
         logging.StreamHandler()
     ]
 )
@@ -71,12 +72,29 @@ class AmazonPPCOptimizer:
             if columns is None:
                 columns = ["campaignName", "impressions", "clicks", "cost"]
             
-            # ✅ CORRECTED payload with adProduct field
+            # Map report_type to adProduct
+            report_type_to_ad_product = {
+                "spCampaigns": "SPONSORED_PRODUCTS",
+                "spAdGroups": "SPONSORED_PRODUCTS",
+                "spKeywords": "SPONSORED_PRODUCTS",
+                "spTargets": "SPONSORED_PRODUCTS",
+                "sbCampaigns": "SPONSORED_BRANDS",
+                "sbAdGroups": "SPONSORED_BRANDS",
+                "sbKeywords": "SPONSORED_BRANDS",
+                "sdCampaigns": "SPONSORED_DISPLAY",
+                "sdAdGroups": "SPONSORED_DISPLAY",
+                "sdTargets": "SPONSORED_DISPLAY"
+            }
+            ad_product = report_type_to_ad_product.get(report_type)
+            if not ad_product:
+                raise ValueError(f"Unsupported report_type '{report_type}'. Supported types: {list(report_type_to_ad_product.keys())}")
+            
+            # ✅ CORRECTED payload with dynamic adProduct field
             payload = {
                 "startDate": start_date,
                 "endDate": end_date,
                 "configuration": {
-                    "adProduct": "SPONSORED_PRODUCTS",  # <--- REQUIRED FIELD
+                    "adProduct": ad_product,
                     "columns": columns,
                     "reportTypeId": report_type,
                     "timeUnit": "DAILY",
@@ -97,7 +115,7 @@ class AmazonPPCOptimizer:
             
         except requests.exceptions.RequestException as e:
             logger.error(f"Error creating campaign report: {e}")
-            if hasattr(e.response, 'text'):
+            if hasattr(e, 'response') and hasattr(e.response, 'text'):
                 logger.error(f"Response: {e.response.text}")
             raise
     
@@ -169,12 +187,16 @@ def main():
     client_id = os.getenv("AMAZON_CLIENT_ID", "")
     
     if not access_token:
-        logger.error("AMAZON_ACCESS_TOKEN environment variable is required")
-        return
+        raise ValueError(
+            "AMAZON_ACCESS_TOKEN environment variable is required. "
+            "Please set it using 'export AMAZON_ACCESS_TOKEN=your_token' in your shell or environment."
+        )
     
     if not client_id:
-        logger.error("AMAZON_CLIENT_ID environment variable is required")
-        return
+        raise ValueError(
+            "AMAZON_CLIENT_ID environment variable is required. "
+            "Please set it using 'export AMAZON_CLIENT_ID=your_client_id' in your shell or environment."
+        )
     
     optimizer = AmazonPPCOptimizer(api_endpoint, access_token, client_id)
     

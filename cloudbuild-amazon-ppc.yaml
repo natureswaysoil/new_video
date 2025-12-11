@@ -30,6 +30,14 @@ steps:
     id: 'push-amazon-ppc-image-latest'
 
   # Deploy to Cloud Run (optional - uncomment to auto-deploy)
+  # WARNING: The configuration below uses --allow-unauthenticated which makes the service
+  # publicly accessible. This is suitable for testing but may pose a security risk for
+  # production environments. Consider requiring authentication for production deployments.
+  #
+  # NOTE: This deployment only sets GCP_PROJECT_ID. You must configure AMAZON_ACCESS_TOKEN
+  # and AMAZON_CLIENT_ID as secrets using --set-secrets or environment variables for the
+  # service to work. Example:
+  #   --set-secrets=AMAZON_ACCESS_TOKEN=amazon-access-token:latest,AMAZON_CLIENT_ID=amazon-client-id:latest
   # - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   #   entrypoint: gcloud
   #   args:
@@ -39,11 +47,13 @@ steps:
   #     - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/amazon-ppc-repo/amazon-ppc-optimizer:$COMMIT_SHA'
   #     - '--region=us-central1'
   #     - '--platform=managed'
-  #     - '--allow-unauthenticated'
+  #     - '--allow-unauthenticated'  # WARNING: Makes service publicly accessible
   #     - '--memory=1Gi'
   #     - '--cpu=1'
   #     - '--timeout=900'
   #     - '--set-env-vars=GCP_PROJECT_ID=$PROJECT_ID'
+  #     # Add secrets for Amazon API credentials (configure in Secret Manager first):
+  #     # - '--set-secrets=AMAZON_ACCESS_TOKEN=amazon-access-token:latest,AMAZON_CLIENT_ID=amazon-client-id:latest'
   #   id: 'deploy-amazon-ppc-cloud-run'
 
 # Images to be pushed to Artifact Registry

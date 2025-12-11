@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Test script for Amazon PPC Optimizer
+Validation script for Amazon PPC Optimizer
 Validates that the payload structure is correct and includes the required adProduct field
 """
 
 import json
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 from amazon_ppc_optimizer import AmazonPPCOptimizer
 
 
@@ -14,51 +14,75 @@ def test_payload_structure():
     """Test that the payload has the correct structure with adProduct field"""
     print("Testing Amazon PPC Optimizer payload structure...")
     
-    # Simulate the payload creation (same logic as in amazon_ppc_optimizer.py)
-    start_date = "2025-12-01"
-    end_date = "2025-12-09"
-    columns = ["campaignName", "impressions", "clicks", "cost"]
-    report_type = "spCampaigns"
+    # Test multiple report types to verify dynamic adProduct mapping
+    test_cases = [
+        ("spCampaigns", "SPONSORED_PRODUCTS"),
+        ("sbCampaigns", "SPONSORED_BRANDS"),
+        ("sdCampaigns", "SPONSORED_DISPLAY"),
+    ]
     
-    # ✅ CORRECTED payload with adProduct field
-    payload = {
-        "startDate": start_date,
-        "endDate": end_date,
-        "configuration": {
-            "adProduct": "SPONSORED_PRODUCTS",  # <--- REQUIRED FIELD
-            "columns": columns,
-            "reportTypeId": report_type,
-            "timeUnit": "DAILY",
-            "format": "GZIP_JSON"
+    all_tests_passed = True
+    
+    for report_type, expected_ad_product in test_cases:
+        print(f"\n--- Testing {report_type} ---")
+        
+        start_date = "2025-12-01"
+        end_date = "2025-12-09"
+        columns = ["campaignName", "impressions", "clicks", "cost"]
+        
+        # Map report_type to adProduct (same logic as in amazon_ppc_optimizer.py)
+        report_type_to_ad_product = {
+            "spCampaigns": "SPONSORED_PRODUCTS",
+            "spAdGroups": "SPONSORED_PRODUCTS",
+            "spKeywords": "SPONSORED_PRODUCTS",
+            "spTargets": "SPONSORED_PRODUCTS",
+            "sbCampaigns": "SPONSORED_BRANDS",
+            "sbAdGroups": "SPONSORED_BRANDS",
+            "sbKeywords": "SPONSORED_BRANDS",
+            "sdCampaigns": "SPONSORED_DISPLAY",
+            "sdAdGroups": "SPONSORED_DISPLAY",
+            "sdTargets": "SPONSORED_DISPLAY"
         }
-    }
+        ad_product = report_type_to_ad_product.get(report_type)
+        
+        # ✅ CORRECTED payload with dynamic adProduct field
+        payload = {
+            "startDate": start_date,
+            "endDate": end_date,
+            "configuration": {
+                "adProduct": ad_product,
+                "columns": columns,
+                "reportTypeId": report_type,
+                "timeUnit": "DAILY",
+                "format": "GZIP_JSON"
+            }
+        }
+        
+        # Validate payload structure
+        print(f"Payload structure:")
+        print(json.dumps(payload, indent=2))
+        
+        # Check required fields
+        tests = {
+            "startDate exists": "startDate" in payload,
+            "endDate exists": "endDate" in payload,
+            "configuration exists": "configuration" in payload,
+            "adProduct exists": "adProduct" in payload.get("configuration", {}),
+            f"adProduct is {expected_ad_product}": payload.get("configuration", {}).get("adProduct") == expected_ad_product,
+            "columns exist": "columns" in payload.get("configuration", {}),
+            "reportTypeId exists": "reportTypeId" in payload.get("configuration", {}),
+            "timeUnit exists": "timeUnit" in payload.get("configuration", {}),
+            "format exists": "format" in payload.get("configuration", {}),
+        }
+        
+        print(f"\nTest Results for {report_type}:")
+        for test_name, result in tests.items():
+            status = "✓ PASS" if result else "✗ FAIL"
+            print(f"  {status}: {test_name}")
+            if not result:
+                all_tests_passed = False
     
-    # Validate payload structure
-    print("\nPayload structure:")
-    print(json.dumps(payload, indent=2))
-    
-    # Check required fields
-    tests = {
-        "startDate exists": "startDate" in payload,
-        "endDate exists": "endDate" in payload,
-        "configuration exists": "configuration" in payload,
-        "adProduct exists": "adProduct" in payload.get("configuration", {}),
-        "adProduct is correct": payload.get("configuration", {}).get("adProduct") == "SPONSORED_PRODUCTS",
-        "columns exist": "columns" in payload.get("configuration", {}),
-        "reportTypeId exists": "reportTypeId" in payload.get("configuration", {}),
-        "timeUnit exists": "timeUnit" in payload.get("configuration", {}),
-        "format exists": "format" in payload.get("configuration", {}),
-    }
-    
-    print("\nTest Results:")
-    all_passed = True
-    for test_name, result in tests.items():
-        status = "✓ PASS" if result else "✗ FAIL"
-        print(f"  {status}: {test_name}")
-        if not result:
-            all_passed = False
-    
-    return all_passed
+    return all_tests_passed
 
 
 def test_date_range_generation():

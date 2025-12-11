@@ -8,8 +8,8 @@ The Amazon PPC Optimizer correctly implements the Amazon Advertising API reporti
 
 ## Key Features
 
-- ✅ Properly configured API payload with `adProduct` field
-- ✅ Support for Sponsored Products campaigns
+- ✅ Properly configured API payload with dynamic `adProduct` field
+- ✅ Support for Sponsored Products, Sponsored Brands, and Sponsored Display campaigns
 - ✅ Flexible date range generation
 - ✅ Report creation and status tracking
 - ✅ Report download functionality
@@ -17,15 +17,15 @@ The Amazon PPC Optimizer correctly implements the Amazon Advertising API reporti
 
 ## Corrected Payload Structure
 
-The key fix in this implementation is the inclusion of the `adProduct` field in the configuration:
+The key fix in this implementation is the inclusion of the `adProduct` field in the configuration, which is now dynamically determined based on the `report_type`:
 
 ```python
-# ✅ CORRECTED
+# ✅ CORRECTED - Dynamic adProduct based on report_type
 payload = {
     "startDate": "2025-12-01",
     "endDate": "2025-12-09",
     "configuration": {
-        "adProduct": "SPONSORED_PRODUCTS",  # <--- REQUIRED FIELD
+        "adProduct": "SPONSORED_PRODUCTS",  # Dynamically set based on report_type
         "columns": ["campaignName", "impressions", "clicks", "cost"],
         "reportTypeId": "spCampaigns",
         "timeUnit": "DAILY",
@@ -33,6 +33,14 @@ payload = {
     }
 }
 ```
+
+### Report Type to adProduct Mapping
+
+The optimizer automatically maps report types to the correct adProduct value:
+
+- **Sponsored Products**: `spCampaigns`, `spAdGroups`, `spKeywords`, `spTargets` → `SPONSORED_PRODUCTS`
+- **Sponsored Brands**: `sbCampaigns`, `sbAdGroups`, `sbKeywords` → `SPONSORED_BRANDS`
+- **Sponsored Display**: `sdCampaigns`, `sdAdGroups`, `sdTargets` → `SPONSORED_DISPLAY`
 
 ### Previous Issue
 
@@ -57,6 +65,11 @@ payload = {
 Set the following environment variables before running:
 
 - `AMAZON_API_ENDPOINT`: Amazon Advertising API endpoint (default: https://advertising-api.amazon.com)
+  - **Note**: Amazon Advertising API uses region-specific endpoints:
+    - North America: `https://advertising-api.amazon.com`
+    - Europe: `https://advertising-api-eu.amazon.com`
+    - Far East: `https://advertising-api-fe.amazon.com`
+  - Choose the endpoint that matches your marketplace region
 - `AMAZON_ACCESS_TOKEN`: Your Amazon Advertising API access token (required)
 - `AMAZON_CLIENT_ID`: Your Amazon Advertising API client ID (required)
 
@@ -190,10 +203,25 @@ Generates a date range for reporting.
 
 ## Supported Report Types
 
+The optimizer supports all major Amazon Advertising report types:
+
+### Sponsored Products
 - `spCampaigns` - Sponsored Products Campaigns
 - `spAdGroups` - Sponsored Products Ad Groups
 - `spKeywords` - Sponsored Products Keywords
 - `spTargets` - Sponsored Products Targets
+
+### Sponsored Brands
+- `sbCampaigns` - Sponsored Brands Campaigns
+- `sbAdGroups` - Sponsored Brands Ad Groups
+- `sbKeywords` - Sponsored Brands Keywords
+
+### Sponsored Display
+- `sdCampaigns` - Sponsored Display Campaigns
+- `sdAdGroups` - Sponsored Display Ad Groups
+- `sdTargets` - Sponsored Display Targets
+
+The `adProduct` field is automatically set based on the `report_type` prefix (sp, sb, or sd).
 
 ## Supported Columns
 
@@ -211,10 +239,11 @@ Refer to the [Amazon Advertising API documentation](https://advertising.amazon.c
 
 ## Logging
 
-The optimizer includes comprehensive logging:
-- Log file: `amazon_ppc_optimizer.log`
-- Console output with timestamps
+The optimizer uses console-only logging optimized for cloud deployments:
+- Console output with timestamps (stdout/stderr)
+- Suitable for Cloud Run and other containerized environments
 - Debug-level logging for payloads (when enabled)
+- All logs are automatically collected by cloud logging services
 
 ## Error Handling
 

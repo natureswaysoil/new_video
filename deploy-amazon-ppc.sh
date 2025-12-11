@@ -81,6 +81,20 @@ else
 fi
 
 if [ "$DEPLOY" == "yes" ]; then
+    echo ""
+    echo -e "${YELLOW}WARNING: The following deployment uses --allow-unauthenticated which makes${NC}"
+    echo -e "${YELLOW}the service publicly accessible without authentication. This is suitable for${NC}"
+    echo -e "${YELLOW}testing but may pose a security risk for production environments.${NC}"
+    echo -e "${YELLOW}Consider using authentication for production deployments.${NC}"
+    echo ""
+    echo -e "${YELLOW}NOTE: This deployment only sets GCP_PROJECT_ID. You must configure${NC}"
+    echo -e "${YELLOW}AMAZON_ACCESS_TOKEN and AMAZON_CLIENT_ID as secrets or environment${NC}"
+    echo -e "${YELLOW}variables separately for the service to work. Example:${NC}"
+    echo -e "${YELLOW}  gcloud run services update $SERVICE_NAME \\${NC}"
+    echo -e "${YELLOW}    --update-env-vars=AMAZON_ACCESS_TOKEN=\$AMAZON_ACCESS_TOKEN,AMAZON_CLIENT_ID=\$AMAZON_CLIENT_ID \\${NC}"
+    echo -e "${YELLOW}    --region=$REGION --project=$PROJECT_ID${NC}"
+    echo ""
+    
     gcloud run deploy $SERVICE_NAME \
         --image=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO_NAME}/${IMAGE_NAME}:latest \
         --region=$REGION \
