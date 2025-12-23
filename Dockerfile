@@ -17,12 +17,18 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application code
 COPY video_automation.py .
 COPY scheduler.py .
+COPY app.py .
 
 # Create directories
 RUN mkdir -p /app/videos /app/logs
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV PORT=8080
 
-# Run the scheduler by default
-CMD ["python", "scheduler.py"]
+# Expose port for Cloud Run
+EXPOSE 8080
+
+# Run the Flask app with gunicorn
+# Timeout set to 30 minutes (1800s) for long-running video processing jobs
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 1800 app:app
